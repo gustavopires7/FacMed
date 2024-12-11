@@ -1,11 +1,20 @@
 from django.urls import path
-from usuarios import views
+from .views import (
+    IndexView, 
+    UserRegisterView, 
+    UserLoginView, 
+    UserLogoutView, 
+    ProfileView, 
+    ProfileEditView, 
+    ProfileDeleteView
+)
 
 urlpatterns = [
-    path('register/', views.user_register, name='register'),
-    path('profile/', views.profile, name='profile'),
-    path('profile/edit/', views.edit_profile, name='edit_profile'),
-    path('profile/delete/', views.delete_profile, name='delete_profile'),
-    path('login/', views.user_login, name='login'),
-    path('logout/', views.user_logout, name='logout'),
+    path('', IndexView.as_view(), name='index'),
+    path('registrar/', UserRegisterView.as_view(), name='register'),
+    path('login/', UserLoginView.as_view(), name='login'),
+    path('logout/', UserLogoutView.as_view(), name='logout'),
+    path('perfil/', ProfileView.as_view(), name='profile'),
+    path('perfil/editar/', ProfileEditView.as_view(), name='profile_edit'),
+    path('perfil/excluir/', ProfileDeleteView.as_view(), name='profile_delete'),
 ]
