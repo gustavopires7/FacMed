@@ -1,11 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    This is just a test
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form class="d-flex" method="get">
+            <input class="form-control me-2" type="search" name="nome" placeholder="Buscar profissional por nome" aria-label="Buscar">
+            <button class="btn btn-outline-primary" type="submit">Buscar</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <form class="d-flex" method="get">
+            <select class="form-select me-2" name="especialidade">
+                <option value="">Todas Especialidades</option>
+                {% for especialidade in especialidades %}
+                    <option value="{{ especialidade.id }}">{{ especialidade.nome }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% for profissional in profissionais %}
+        <div class="col-md-4 mb-4">
+            <div class="card professional-card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ profissional.usuario.first_name }} {{ profissional.usuario.last_name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ profissional.registro_profissional }}</h6>
+                    <p class="card-text">
+                        <strong>Especialidades:</strong> 
+                        {% for especialidade in profissional.especialidades.all %}
+                            {{ especialidade.nome }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p class="card-text">
+                        <strong>Preço do Serviço:</strong> R$ {{ profissional.preco_servico|floatformat:2 }}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a href="#" class="btn btn-sm btn-outline-primary">Ver Detalhes</a>
+                            <a href="#" class="btn btn-sm btn-primary">Agendar</a>
+                        </div>
+                        {% if profissional.calcular_nota_media %}
+                            <small class="text-muted">
+                                <i class="bi bi-star-fill text-warning"></i> 
+                                {{ profissional.calcular_nota_media|floatformat:1 }}
+                            </small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                Nenhum profissional encontrado.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
