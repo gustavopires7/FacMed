@@ -3,8 +3,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from .forms import UsuarioCreationForm, UsuarioUpdateForm
-from .models import Usuario
+from django.http import JsonResponse
+from .models import Cidade
+
+from django.http import HttpResponseRedirect
+from .forms import  UsuarioUpdateForm, CadastroProfissionalForm, UsuarioCreationForm
+from .models import Usuario, Profissional
 
 class IndexView(TemplateView):
     template_name = 'usuarios/index.html'
@@ -12,17 +16,23 @@ class IndexView(TemplateView):
 class UserRegisterView(CreateView):
     model = Usuario
     form_class = UsuarioCreationForm
-    template_name = 'usuarios/form.html'
+    template_name = 'usuarios/cliente_form.html'
     success_url = reverse_lazy('login')
 
     def form_valid(self, form):
-        response = super().form_valid(form)
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password1')
-        user = authenticate(username=username, password=password)
-        if user:
-            login(self.request, user)
-        return response
+        form.save()
+        return HttpResponseRedirect(self.success_url)
+
+class ProfessionalRegisterView(CreateView):
+    model = Profissional
+    form_class = CadastroProfissionalForm
+    template_name = 'usuarios/profissional_form.html'
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        print(form.errors)
+        form.save()
+        return HttpResponseRedirect(self.success_url)
 
 class UserLoginView(TemplateView):
     template_name = 'usuarios/login.html'
@@ -68,3 +78,13 @@ class ProfileDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         logout(request)
         return super().delete(request, *args, **kwargs)
+
+
+def tipo_usuario(request):
+    return render(request, 'usuarios/selecao_usuario.html')
+
+
+def carregar_cidades(request):
+    estado_id = request.GET.get('estado')
+    cidades = Cidade.objects.filter(estado_id=estado_id).values('id', 'nome')
+    return JsonResponse(list(cidades), safe=False)
