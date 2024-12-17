@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Usuario, Endereco, Estado, Cidade, Profissional, Especialidade
+
+from .models import Cidade, Endereco, Especialidade, Estado, Profissional, Usuario
+
 
 class UsuarioCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
@@ -305,6 +307,12 @@ class CadastroProfissionalForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bairro'})
     )
+
+    imagem = forms.ImageField(
+        required=False,
+        widget=forms.FileInput(attrs={'class': 'form-control', 'placeholder': 'Imagem do profissional'})
+    )
+
     cep = forms.CharField(
         max_length=8, 
         required=False,
@@ -313,7 +321,7 @@ class CadastroProfissionalForm(forms.ModelForm):
 
     class Meta:
         model = Profissional
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'telefone', 'CRM', 'especialidade', 'biografia', 'preco_servico', 'estado', 'cidade', 'rua', 'numero', 'bairro', 'telefone', 'cep', 'data_nascimento']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'telefone', 'CRM', 'especialidade', 'biografia', 'preco_servico', 'estado', 'cidade', 'rua', 'numero', 'bairro', 'telefone', 'cep', 'data_nascimento', 'imagem']
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -344,18 +352,6 @@ class CadastroProfissionalForm(forms.ModelForm):
         if crm and Profissional.objects.filter(CRM=crm).exists():
             raise forms.ValidationError('O CRM informado já está em uso.')
         return crm
-
-    def clean_telefone(self):
-        telefone = self.cleaned_data.get('telefone')
-        if telefone and not telefone.isdigit():
-            raise forms.ValidationError('O telefone deve conter apenas números.')
-        return telefone
-
-    def clean_cep(self):
-        cep = self.cleaned_data.get('cep')
-        if cep and (len(cep) != 8 or not cep.isdigit()):
-            raise forms.ValidationError('O CEP deve conter 8 dígitos numéricos.')
-        return cep
 
     def clean_preco_servico(self):
         preco = self.cleaned_data.get('preco_servico')

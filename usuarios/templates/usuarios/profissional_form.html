@@ -10,7 +10,7 @@
                     <h2 class="text-center mb-0">Cadastro de Profissional de Saúde</h2>
                 </div>
                 <div class="card-body">
-                    <form method="post" novalidate>
+                    <form method="post" novalidate enctype='multipart/form-data'>
                         {% csrf_token %}
                         
                         <div class="card mb-3">
@@ -143,6 +143,12 @@
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label">Preço do Serviço</label>
                                         {{ form.preco_servico }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Sua foto profissional</label>
+                                        {{ form.imagem }}
                                     </div>
                                 </div>
                             </div>

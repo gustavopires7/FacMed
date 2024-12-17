@@ -1,17 +1,46 @@
-from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import login, logout, authenticate
-from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
+from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.http import JsonResponse
-from .models import Cidade
+from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
-from django.http import HttpResponseRedirect
-from .forms import  UsuarioUpdateForm, CadastroProfissionalForm, UsuarioCreationForm
-from .models import Usuario, Profissional
+from .forms import CadastroProfissionalForm, UsuarioCreationForm, UsuarioUpdateForm
+from .models import Cidade, Especialidade, Profissional, Usuario
+
 
 class IndexView(TemplateView):
     template_name = 'usuarios/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        nome = self.request.GET.get('nome', '').strip()
+        
+        profissionais = Profissional.objects.all()
+        if nome:
+            profissionais = profissionais.filter(usuario__username__icontains=nome)
+        
+        especialidade = self.request.GET.get('especialidade', '').strip()
+        if especialidade:
+            profissionais = profissionais.filter(especialidade_id=especialidade)
+        
+        paginator = Paginator(profissionais, 10)
+        page_number = self.request.GET.get('page', 1)
+
+        especialidades = Especialidade.objects.all()
+
+        try:
+            page_obj = paginator.get_page(page_number)
+        except Exception:
+            raise Http404("Página não encontrada")
+        
+        context["page_obj"] = page_obj
+        context["profissionais"] = page_obj.object_list
+        context["especialidades"] = especialidades
+        context["is_paginated"] = page_obj.has_other_pages()
+        return context
 
 class UserRegisterView(CreateView):
     model = Usuario

@@ -1,6 +1,6 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
 
 class Estado(models.Model):
@@ -46,6 +46,7 @@ class Especialidade(models.Model):
 class Profissional(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     especialidade = models.ForeignKey(Especialidade, on_delete=models.CASCADE, default=None, null=True, blank=True)
+    imagem = models.ImageField(upload_to='media', null=True, blank=True)
     CRM = models.IntegerField(unique=True, default=None)
     biografia = models.TextField(blank=True, null=True)
     preco_servico = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
