@@ -27,7 +27,6 @@
         <div class="col-12 mb-4">
             <div class="card professional-card shadow-sm">
                 <div class="row g-0 align-items-center">
-                    <!-- Imagem do profissional -->
                     <div class="col-md-2 text-center p-3">
                         {% if profissional.imagem.url != '' %}
                         <img src="{{ profissional.imagem.url }}" class="rounded-circle img-fluid" alt="Imagem do Profissional" style="width: 100px; height: 100px; object-fit: cover;">
@@ -38,7 +37,7 @@
                         {% endif %}
                     </div>
 
-                    <!-- Informações do profissional -->
+
                     <div class="col-md-10">
                         <div class="card-body">
                             <h5 class="card-title mb-1">{{ profissional.usuario.first_name }} {{ profissional.usuario.last_name }}</h5>
@@ -47,7 +46,7 @@
                             <p class="mb-1"><strong>Preço do Serviço:</strong> R$ {{ profissional.preco_servico|floatformat:2 }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <a href="#" class="btn btn-sm btn-primary">Ver Detalhes</a>
+                                    <a href="{% url 'profissional_detalhes' pk=profissional.pk %}" class="btn btn-sm btn-primary">Ver Detalhes</a>
                                 </div>
                                 {% if profissional.calcular_nota_media %}
                                 <small class="text-muted">

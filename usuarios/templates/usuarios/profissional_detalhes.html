@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-sm">
+        <div class="row g-0 align-items-center">
+            <div class="col-md-4 text-center p-4">
+                {% if profissional.imagem.url != '' %}
+                <img src="{{ profissional.imagem.url }}" class="rounded-circle img-fluid shadow-sm" alt="Imagem do Profissional" style="width: 200px; height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center shadow-sm" style="width: 200px; height: 200px; font-size: 2.5rem;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h3 class="card-title mb-2">{{ profissional.usuario.first_name }} {{ profissional.usuario.last_name }}</h3>
+                    <h5 class="card-subtitle text-muted mb-3">{{ profissional.especialidade.nome }}</h5>
+                    <p class="mb-2">
+                        <strong>CRM:</strong> {{ profissional.CRM }}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Preço do Serviço:</strong> R$ {{ profissional.preco_servico|floatformat:2 }}
+                    </p>
+                    <p class="mb-4">
+                        <strong>Biografia:</strong> {{ profissional.biografia|default:"Não fornecida." }}
+                    </p>
+                    <a href="#" class="btn btn-primary btn-lg">Agendar Consulta</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Mais informações sobre o profissional</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-0">
+                O profissional <strong>{{ profissional.usuario.first_name }} {{ profissional.usuario.last_name }}</strong> é especializado em <strong>{{ profissional.especialidade.nome }}</strong> e possui vasta experiência na área.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

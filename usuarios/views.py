@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
@@ -117,3 +117,14 @@ def carregar_cidades(request):
     estado_id = request.GET.get('estado')
     cidades = Cidade.objects.filter(estado_id=estado_id).values('id', 'nome')
     return JsonResponse(list(cidades), safe=False)
+
+class ProfissionalDetalhesView(LoginRequiredMixin, TemplateView):
+    template_name = 'usuarios/profissional_detalhes.html'
+    login_url = 'login'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Busca o profissional pelo ID fornecido na URL
+        profissional_id = self.kwargs.get('pk')  # Assumindo que o ID é passado como parte da URL
+        context['profissional'] = get_object_or_404(Profissional, pk=profissional_id)
+        return context
