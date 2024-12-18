@@ -29,9 +29,42 @@ class Endereco(models.Model):
 
 class Usuario(AbstractUser):
     telefone = models.CharField(max_length=15, blank=True, null=True)
+    telefone_profissional = models.BooleanField(default=False, verbose_name="Este número é WhatsApp profissional?")
     data_nascimento = models.DateField(null=True, blank=True)
     endereco = models.ForeignKey(Endereco, on_delete=models.CASCADE, null=True, blank=True)
     telefone = models.CharField(max_length=15, blank=True, null=True)
+    imagem_perfil = models.ImageField(upload_to='media/usuarios', null=True, blank=True)
+
+    class Meta:
+        db_table = 'usuario'
+
+    def delete(self, *args, **kwargs):
+        try:
+            # Deletar serviços primeiro
+            self.servicos_contratados.all().delete()
+            
+            # Deletar avaliações
+            Avaliacao.objects.filter(cliente=self).delete()
+            
+            # Deletar comentários
+            Comentario.objects.filter(autor=self).delete()
+            
+            # Deletar endereço
+            if self.endereco:
+                endereco = self.endereco
+                self.endereco = None
+                self.save()
+                endereco.delete()
+            
+            # Se for profissional, deletar o perfil profissional
+            if hasattr(self, 'profissional'):
+                self.profissional.delete()
+            
+            # Por fim, deletar o próprio usuário
+            super().delete(*args, **kwargs)
+        except Exception as e:
+            print(f"Erro ao deletar usuário: {str(e)}")
+            raise
 
     def __str__(self):
         return self.username
@@ -87,8 +120,25 @@ class Avaliacao(models.Model):
             MaxValueValidator(5)
         ]
     )
+    titulo = models.CharField(max_length=100, blank=True, null=True, default='')
     comentario = models.TextField(blank=True, null=True)
     data_avaliacao = models.DateTimeField(auto_now_add=True)
+    recomenda = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-data_avaliacao']
 
     def __str__(self):
-        return f'Profissional: {self.profissional.usuario.username} ({self.profissional.especialidade.nome}) - Cliente: {self.cliente.username} - Nota: {self.nota}'
+        return f'Avaliação de {self.cliente.get_full_name()} para {self.profissional.usuario.get_full_name()}'
+
+class Comentario(models.Model):
+    avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE, related_name='respostas')
+    autor = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    texto = models.TextField()
+    data_comentario = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['data_comentario']
+
+    def __str__(self):
+        return f'Comentário de {self.autor.get_full_name()} em {self.data_comentario}'

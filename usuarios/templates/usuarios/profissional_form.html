@@ -104,6 +104,14 @@
                                         {{ form.telefone }}
                                     </div>
                                     <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            {{ form.telefone_profissional }}
+                                            <label class="form-check-label" for="{{ form.telefone_profissional.id_for_label }}">
+                                                Este número é WhatsApp profissional?
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
                                         <label class="form-label">Data de Nascimento</label>
                                         {{ form.data_nascimento }}
                                     </div>

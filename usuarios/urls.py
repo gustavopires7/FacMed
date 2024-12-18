@@ -12,6 +12,11 @@ from .views import (
     UserRegisterView,
     carregar_cidades,
     tipo_usuario,
+    adicionar_comentario,
+    adicionar_avaliacao,
+    enviar_email_agendamento,
+    excluir_comentario,
+    excluir_avaliacao,
 )
 
 urlpatterns = [
@@ -26,4 +31,9 @@ urlpatterns = [
     path('perfil/excluir/', ProfileDeleteView.as_view(), name='profile_delete'),
     path('carregar-cidades/', carregar_cidades, name='carregar_cidades'),
     path('profissional/detalhes/<int:pk>/', ProfissionalDetalhesView.as_view(), name='profissional_detalhes'),
+    path('avaliacao/<int:avaliacao_id>/comentar/', adicionar_comentario, name='adicionar_comentario'),
+    path('profissional/<int:profissional_id>/avaliar/', adicionar_avaliacao, name='adicionar_avaliacao'),
+    path('profissional/<int:profissional_id>/agendar/', enviar_email_agendamento, name='enviar_email_agendamento'),
+    path('comentario/<int:comentario_id>/excluir/', excluir_comentario, name='excluir_comentario'),
+    path('avaliacao/<int:avaliacao_id>/excluir/', excluir_avaliacao, name='excluir_avaliacao'),
 ]
